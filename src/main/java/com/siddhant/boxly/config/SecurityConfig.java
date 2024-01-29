@@ -30,7 +30,7 @@ public class SecurityConfig {
 
         httpSecurity
                 .csrf((csrf)-> csrf.disable())
-                .authorizeHttpRequests((authorize)->authorize.requestMatchers("/api/auth/**").permitAll().anyRequest().authenticated())
+                .authorizeHttpRequests((authorize)->authorize.requestMatchers("/api/auth/**","/swagger-ui/**","/v3/api-docs/**").permitAll().anyRequest().authenticated())
                 .sessionManagement((session)->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
