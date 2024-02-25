@@ -7,4 +7,6 @@ public class UserResponseDto {
 
     private Integer id;
     private String email;
+    private boolean isEnabled;
+
 }

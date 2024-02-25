@@ -2,7 +2,7 @@ package com.siddhant.boxly.services.impl;
 
 import com.siddhant.boxly.entities.RefreshToken;
 import com.siddhant.boxly.entities.User;
-import com.siddhant.boxly.exceptions.ExpiredRefreshTokenException;
+import com.siddhant.boxly.exceptions.ExpiredTokenException;
 import com.siddhant.boxly.exceptions.ResourceNotFoundException;
 import com.siddhant.boxly.payload.request.RefreshTokenRequestDto;
 import com.siddhant.boxly.payload.response.UserResponseDto;
@@ -53,7 +53,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
         if(refreshToken.getExpiresAt().compareTo(Instant.now()) < 0){
             refreshTokenRepository.delete(refreshToken);
-            throw new ExpiredRefreshTokenException(refreshToken.getToken());
+            throw new ExpiredTokenException(refreshToken.getToken());
         }
 
         if(!refreshToken.getUser().getEmail().equals(refreshTokenRequestDto.getEmail())){

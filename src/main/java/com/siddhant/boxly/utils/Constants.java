@@ -1,11 +1,13 @@
 package com.siddhant.boxly.utils;
 
-public class Constants {
+public interface Constants {
 
-     final static String TOKEN_HEADER= "Authorization";
-     final static String TOKEN_PREFIX= "Bearer ";
+     String TOKEN_HEADER= "Authorization";
+     String TOKEN_PREFIX= "Bearer ";
 
-     final static Long ACCESS_TOKEN_EXPIRY=3600000L;
-     public final static Long REFRESH_TOKEN_EXPIRY=86400000L;
+     Long ACCESS_TOKEN_EXPIRY=3600000L;
+     Long REFRESH_TOKEN_EXPIRY=86400000L;
+
+     Long CONFIRMATION_TOKEN_EXPIRY=86400000L;
 
 }
