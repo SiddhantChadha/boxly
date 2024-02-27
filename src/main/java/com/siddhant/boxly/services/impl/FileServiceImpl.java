@@ -5,10 +5,7 @@ import com.siddhant.boxly.entities.User;
 import com.siddhant.boxly.exceptions.FileUploadException;
 import com.siddhant.boxly.exceptions.ResourceNotFoundException;
 import com.siddhant.boxly.helper.FileUploadHelper;
-import com.siddhant.boxly.payload.response.FileResponseDto;
-import com.siddhant.boxly.payload.response.FileShareResponseDto;
-import com.siddhant.boxly.payload.response.FileUploadResponseDto;
-import com.siddhant.boxly.payload.response.UserResponseDto;
+import com.siddhant.boxly.payload.response.*;
 import com.siddhant.boxly.repositories.FileRepository;
 import com.siddhant.boxly.repositories.UserRepository;
 import com.siddhant.boxly.services.FileService;
@@ -30,19 +27,17 @@ public class FileServiceImpl implements FileService {
 
     private FileRepository fileRepository;
     private UserRepository userRepository;
-    private StorageBucketUtil storageBucketUtil;
-
     private ModelMapper modelMapper;
-
     private FileUploadHelper fileUploadHelper;
 
+    private StorageBucketUtil storageBucketUtil;
 
-    public FileServiceImpl(FileRepository fileRepository, UserRepository userRepository, StorageBucketUtil storageBucketUtil, ModelMapper modelMapper, FileUploadHelper fileUploadHelper){
+    public FileServiceImpl(FileRepository fileRepository, UserRepository userRepository, ModelMapper modelMapper, FileUploadHelper fileUploadHelper, StorageBucketUtil storageBucketUtil){
         this.fileRepository = fileRepository;
         this.userRepository = userRepository;
-        this.storageBucketUtil = storageBucketUtil;
         this.modelMapper = modelMapper;
         this.fileUploadHelper = fileUploadHelper;
+        this.storageBucketUtil = storageBucketUtil;
     }
 
 
@@ -145,6 +140,13 @@ public class FileServiceImpl implements FileService {
 
 
         return fileShareResponseDtoList;
+    }
+
+    @Override
+    public FileDownloadResponseDto downloadFile(Integer fileId) {
+        File file = fileRepository.findById(fileId).orElseThrow(()->new ResourceNotFoundException("File","id",fileId));
+        byte[] fileBytes = storageBucketUtil.downloadFile(file.getGeneratedName());
+        return FileDownloadResponseDto.builder().fileName(file.getOriginalName()).file(fileBytes).build();
     }
 
 }

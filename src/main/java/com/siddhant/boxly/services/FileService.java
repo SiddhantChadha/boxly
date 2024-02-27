@@ -1,9 +1,6 @@
 package com.siddhant.boxly.services;
 
-import com.siddhant.boxly.payload.response.FileResponseDto;
-import com.siddhant.boxly.payload.response.FileShareResponseDto;
-import com.siddhant.boxly.payload.response.FileUploadResponseDto;
-import com.siddhant.boxly.payload.response.UserResponseDto;
+import com.siddhant.boxly.payload.response.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -24,4 +21,6 @@ public interface FileService {
     List<UserResponseDto> getUserWithAccessToFile(Integer fileId);
 
     List<FileShareResponseDto> updateAccessToFile(Integer fileId,List<String> userEmail);
+
+    FileDownloadResponseDto downloadFile(Integer fileId);
 }

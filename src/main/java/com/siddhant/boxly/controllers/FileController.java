@@ -4,12 +4,14 @@ import com.siddhant.boxly.payload.request.FileShareRequestDto;
 import com.siddhant.boxly.payload.response.*;
 import com.siddhant.boxly.services.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.util.List;
 
@@ -85,4 +87,21 @@ public class FileController {
         List<FileShareResponseDto> fileShareResponseDtoList = fileService.updateAccessToFile(fileId,fileShareRequestDto.getUserEmail());
         return new ResponseEntity<>(new ApiResponse(true,fileShareResponseDtoList),HttpStatus.OK);
     }
+
+
+    @GetMapping("/files/{fileId}/download")
+    @PreAuthorize("@authHelper.hasCreatedFile(#root,#fileId) or @authHelper.hasAccessToFile(#root,#fileId)")
+    public ResponseEntity<StreamingResponseBody> downloadFile(@PathVariable Integer fileId){
+        FileDownloadResponseDto fileDownloadResponseDto = fileService.downloadFile(fileId);
+
+        StreamingResponseBody streamingResponseBody = outputStream -> {
+          outputStream.write(fileDownloadResponseDto.getFile());
+          outputStream.flush();
+        };
+
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION,"attachment;filename="+fileDownloadResponseDto.getFileName())
+                .body(streamingResponseBody);
+    }
+
 }

@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 @Component
@@ -34,10 +33,9 @@ public class StorageBucketUtil {
             return new UploadedFileDto(blob.getName(),blob.getSize());
     }
 
-    public void downloadFile(String generationId){
-
+    public byte[] downloadFile(String generationId){
         byte[] content = storage.readAllBytes(gcpBucketId,generationId);
-        System.out.println(new String(content, StandardCharsets.UTF_8));
+        return content;
     }
 
 
