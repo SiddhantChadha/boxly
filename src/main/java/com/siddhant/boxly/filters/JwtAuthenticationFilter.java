@@ -5,6 +5,7 @@ import com.siddhant.boxly.entities.User;
 import com.siddhant.boxly.payload.response.ApiResponse;
 import com.siddhant.boxly.services.impl.CustomUserDetailService;
 import com.siddhant.boxly.utils.JwtUtil;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -56,9 +57,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             filterChain.doFilter(request,response);
-        }catch (Exception e){
-
-            ApiResponse apiResponse = new ApiResponse(false,e.getMessage());
+        }catch (ExpiredJwtException e){
+            ApiResponse apiResponse = new ApiResponse(false,"JWT Token Expired");
             response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
             response.getWriter().write(objectMapper.writeValueAsString(apiResponse));
         }

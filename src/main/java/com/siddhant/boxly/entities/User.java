@@ -18,15 +18,12 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-
     private String firstName;
-
 
     private String lastName;
 
     @Column(unique = true)
     private String email;
-
 
     private String password;
 
