@@ -25,7 +25,7 @@ public class UserRegistrationEventListener {
     @Async
     public void handleUserRegistrationEvent(UserRegistrationEvent userRegistrationEvent){
           String verificationToken = verificationTokenService.createToken(userRegistrationEvent.getEmail());
-          emailService.sendVerificationEmail(userRegistrationEvent.getEmail(),verificationToken);
+          emailService.sendVerificationEmail(userRegistrationEvent.getEmail(),userRegistrationEvent.getFirstName(),verificationToken);
     }
 
 }

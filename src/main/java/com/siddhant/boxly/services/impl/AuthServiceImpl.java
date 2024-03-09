@@ -55,7 +55,7 @@ public class AuthServiceImpl implements AuthService {
         String encodedPassword  = passwordEncoder.encode(signupRequestDto.getPassword());
         signupRequestDto.setPassword(encodedPassword);
         UserResponseDto userResponseDto = userService.createUser(signupRequestDto);
-        applicationEventPublisher.publishEvent(new UserRegistrationEvent(userResponseDto.getEmail()));
+        applicationEventPublisher.publishEvent(new UserRegistrationEvent(userResponseDto.getEmail(),userResponseDto.getFirstName()));
         return userResponseDto;
     }
 

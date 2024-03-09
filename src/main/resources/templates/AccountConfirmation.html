@@ -1,0 +1,17 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+<div style="">
+<p>Hi <span th:text="${userName}">User</span></p>
+<p>Thank you for choosing Boxly. To continue using our services kindly enter this pass-phrase on the prompt.</p>
+<p th:text="${token}" class="secret">Secret Token</p>
+
+<p>Team Boxly</p>
+</div>
+</body>
+
+</html>
