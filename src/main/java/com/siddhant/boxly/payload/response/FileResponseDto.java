@@ -12,7 +12,7 @@ public class FileResponseDto {
 
     private Integer id;
     private String originalName;
-
+    private String thumbnailUrl;
     private Long size;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:MM:SS")

@@ -90,26 +90,9 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public List<FileShareResponseDto> giveAccessToFile(Integer fileId,List<String> userEmail){
-        File file = fileRepository.findById(fileId).orElseThrow(()->new ResourceNotFoundException("File","id",fileId));
-        List<FileShareResponseDto> fileShareResponseDtoList = userEmail.stream().map(userId->{
-            Optional<User> optionalUser = userRepository.findByEmail(userId);
-
-            if(optionalUser.isPresent()){
-                User user = optionalUser.get();
-
-                if(!file.getSharedWith().contains(user)){
-                    file.getSharedWith().add(user);
-                }
-
-                return FileShareResponseDto.builder().shared(true).userEmail(userId).build();
-            }else {
-                return FileShareResponseDto.builder().shared(false).userEmail(userId).build();
-            }
-        }).toList();
-
-        fileRepository.save(file);
-        return fileShareResponseDtoList;
+    public List<FileResponseDto> getAllSharedFiles() {
+        List<File> fileList = fileRepository.findBySharedWithAndStatus((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal(),Status.LIVE);
+        return fileList.stream().map(file->modelMapper.map(file,FileResponseDto.class)).collect(Collectors.toList());
     }
 
     @Override
@@ -119,12 +102,18 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public List<FileShareResponseDto> updateAccessToFile(Integer fileId, List<String> userEmail) {
+    public List<FileShareResponseDto> updateAccessToFile(Integer fileId, List<String> addUser,List<String> removeUser) {
         File file = fileRepository.findById(fileId).orElseThrow(()->new ResourceNotFoundException("File","id",fileId));
 
-        file.getSharedWith().clear();
+        removeUser.forEach((email)->{
+            Optional<User> user = userRepository.findByEmail(email);
+            if(user.isPresent()){
 
-        List<FileShareResponseDto> fileShareResponseDtoList = userEmail.stream().map(email->{
+                file.getSharedWith().remove(user.get());
+            }
+        });
+
+        List<FileShareResponseDto> fileShareResponseDtoList = addUser.stream().map(email->{
             Optional<User> optionalUser = userRepository.findByEmail(email);
 
             if(optionalUser.isPresent()){
@@ -137,7 +126,7 @@ public class FileServiceImpl implements FileService {
             }
 
         }).toList();
-
+        fileRepository.save(file);
 
         return fileShareResponseDtoList;
     }
@@ -147,6 +136,14 @@ public class FileServiceImpl implements FileService {
         File file = fileRepository.findById(fileId).orElseThrow(()->new ResourceNotFoundException("File","id",fileId));
         byte[] fileBytes = storageBucketUtil.downloadFile(file.getGeneratedName());
         return FileDownloadResponseDto.builder().fileName(file.getOriginalName()).file(fileBytes).build();
+    }
+
+    public FileResponseDto renameFile(Integer fileId,String newName){
+        File file = fileRepository.findById(fileId).orElseThrow(()->new ResourceNotFoundException("File","id",fileId));
+        String extension = file.getOriginalName().substring(file.getOriginalName().lastIndexOf('.'));
+        file.setOriginalName(newName + extension);
+        File updatedFile = fileRepository.save(file);
+        return modelMapper.map(updatedFile,FileResponseDto.class);
     }
 
 }

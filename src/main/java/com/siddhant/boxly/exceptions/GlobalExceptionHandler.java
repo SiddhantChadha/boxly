@@ -6,13 +6,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -44,19 +40,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException ex){
-        Map<String,String> map = new HashMap<>();
+        StringBuilder sb = new StringBuilder();
         ex.getBindingResult().getAllErrors().forEach((err)->{
-            String fieldName = ((FieldError)err).getField();
-            String message = err.getDefaultMessage();
-            map.put(fieldName,message);
+            sb.append(err.getDefaultMessage());
+            sb.append("\n");
         });
 
-        return new ResponseEntity<ApiResponse>(new ApiResponse(false,map),HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<ApiResponse>(new ApiResponse(false,sb),HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiResponse> sqlIntegrityConstraintViolationExceptionHandler(DataIntegrityViolationException e){
-        return new ResponseEntity<>(new ApiResponse(false,e.getMessage()),HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new ApiResponse(false,"Username already exists"),HttpStatus.BAD_REQUEST);
     }
 
 }

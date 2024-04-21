@@ -37,14 +37,18 @@ public class FileUploadHelper {
                     .size(uploadedFileDto.getSize()).status(Status.LIVE)
                     .generatedName(uploadedFileDto.getFileName())
                     .originalName(multipartFile.getOriginalFilename())
+                    .thumbnailUrl("https://e7.pngegg.com/pngimages/521/255/png-clipart-computer-icons-data-file-document-file-format-others-miscellaneous-blue.png")
                     .createdBy((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).build();
+
 
             File file = modelMapper.map(fileRequestDto, File.class);
             fileRepository.save(file);
             return CompletableFuture.completedFuture(new FileUploadResponseDto(multipartFile.getOriginalFilename(), true));
         }catch (Exception e){
+            System.out.println(e.getMessage());
             return CompletableFuture.completedFuture(new FileUploadResponseDto(multipartFile.getOriginalFilename(),false));
         }
     }
+
 
 }

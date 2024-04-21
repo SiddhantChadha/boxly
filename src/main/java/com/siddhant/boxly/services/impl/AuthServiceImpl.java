@@ -79,8 +79,7 @@ public class AuthServiceImpl implements AuthService {
     public AuthenticatedResponse verifyAndGenerateToken(RefreshTokenRequestDto refreshTokenRequestDto){
         UserResponseDto userResponseDto =  refreshTokenService.verifyRefreshToken(refreshTokenRequestDto);
         String token = jwtUtil.generateToken(userResponseDto.getEmail());
-        String refreshToken = refreshTokenService.createRefreshToken(userResponseDto.getEmail());
-        return new AuthenticatedResponse(token,refreshToken,userResponseDto);
+        return new AuthenticatedResponse(token,refreshTokenRequestDto.getRefreshToken(),userResponseDto);
     }
 
 }

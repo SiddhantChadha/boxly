@@ -7,6 +7,7 @@ import java.util.List;
 @Data
 public class FileShareRequestDto {
 
-    private List<String> userEmail;
+    private List<String> addUser;
+    private List<String> removeUser;
 
 }

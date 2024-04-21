@@ -21,6 +21,8 @@ public class File {
 
     private String generatedName;
 
+    private String thumbnailUrl;
+
     private Long size;
 
     @Column(name = "created_at")

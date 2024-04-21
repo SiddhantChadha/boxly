@@ -1,5 +1,6 @@
 package com.siddhant.boxly.controllers;
 
+import com.siddhant.boxly.payload.request.FileRenameRequestDto;
 import com.siddhant.boxly.payload.request.FileShareRequestDto;
 import com.siddhant.boxly.payload.response.*;
 import com.siddhant.boxly.services.FileService;
@@ -16,6 +17,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import java.util.List;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api")
 public class FileController {
 
@@ -41,7 +43,7 @@ public class FileController {
 
     @GetMapping("/user/{userId}/archive")
     @PreAuthorize("principal.getId() == #userId")
-    public ResponseEntity<ApiResponse> getAllArchivedFiles(){
+    public ResponseEntity<ApiResponse> getAllArchivedFiles(@PathVariable Integer userId){
         List<FileResponseDto> fileResponseDtoList = fileService.getAllArchivedFiles();
         return new ResponseEntity<>(new ApiResponse(true,fileResponseDtoList),HttpStatus.OK);
     }
@@ -67,13 +69,6 @@ public class FileController {
         return new ResponseEntity<>(new ApiResponse(true,"File deleted successfully"),HttpStatus.OK);
     }
 
-    @PostMapping("/files/{fileId}/share")
-    @PreAuthorize("@authHelper.hasCreatedFile(#root,#fileId)")
-    public ResponseEntity<ApiResponse> shareFile(@PathVariable Integer fileId, @RequestBody FileShareRequestDto fileShareRequestDto){
-        List<FileShareResponseDto> fileShareResponseDtoList = fileService.giveAccessToFile(fileId,fileShareRequestDto.getUserEmail());
-        return new ResponseEntity<>(new ApiResponse(true,fileShareResponseDtoList),HttpStatus.OK);
-    }
-
     @GetMapping("/files/{fileId}/users")
     @PreAuthorize("@authHelper.hasCreatedFile(#root,#fileId)")
     public ResponseEntity<ApiResponse> getUsersWithAccessToFile(@PathVariable Integer fileId){
@@ -81,10 +76,10 @@ public class FileController {
         return new ResponseEntity<>(new ApiResponse(true,fileShareResponseDtoList),HttpStatus.OK);
     }
 
-    @PutMapping("/files/{fileId}/users")
+    @PatchMapping("/files/{fileId}/users")
     @PreAuthorize("@authHelper.hasCreatedFile(#root,#fileId)")
     public ResponseEntity<ApiResponse> updateUsersAccessToFile(@PathVariable Integer fileId,@RequestBody FileShareRequestDto fileShareRequestDto){
-        List<FileShareResponseDto> fileShareResponseDtoList = fileService.updateAccessToFile(fileId,fileShareRequestDto.getUserEmail());
+        List<FileShareResponseDto> fileShareResponseDtoList = fileService.updateAccessToFile(fileId,fileShareRequestDto.getAddUser(),fileShareRequestDto.getRemoveUser());
         return new ResponseEntity<>(new ApiResponse(true,fileShareResponseDtoList),HttpStatus.OK);
     }
 
@@ -100,8 +95,26 @@ public class FileController {
         };
 
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS,"X-Suggested-Filename")
+                .header("X-Suggested-Filename",fileDownloadResponseDto.getFileName())
                 .header(HttpHeaders.CONTENT_DISPOSITION,"attachment;filename="+fileDownloadResponseDto.getFileName())
                 .body(streamingResponseBody);
+
+    }
+
+
+    @PatchMapping("/files/{fileId}/rename")
+    @PreAuthorize("@authHelper.hasCreatedFile(#root,#fileId)")
+    public ResponseEntity<ApiResponse> renameFile(@PathVariable Integer fileId,@RequestBody FileRenameRequestDto fileRenameRequestDto){
+        FileResponseDto fileResponseDto = fileService.renameFile(fileId,fileRenameRequestDto.getNewName());
+        return new ResponseEntity<>(new ApiResponse(true,fileResponseDto),HttpStatus.OK);
+    }
+
+    @GetMapping("/user/{userId}/files/shared")
+    @PreAuthorize("principal.getId() == #userId")
+    public ResponseEntity<ApiResponse> getSharedFiles(@PathVariable Integer userId){
+        List<FileResponseDto> fileResponseDtoList = fileService.getAllSharedFiles();
+        return new ResponseEntity<>(new ApiResponse(true,fileResponseDtoList),HttpStatus.OK);
     }
 
 }

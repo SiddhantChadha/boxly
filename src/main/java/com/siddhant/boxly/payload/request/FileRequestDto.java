@@ -13,6 +13,7 @@ public class FileRequestDto {
 
     private String generatedName;
     private String originalName;
+    private String thumbnailUrl;
     private Long size;
     private Status status;
     private User createdBy;

@@ -12,5 +12,5 @@ import java.util.List;
 public interface FileRepository extends JpaRepository<File, Integer> {
 
     List<File> findByCreatedByAndStatus(User user, Status status);
-
+    List<File> findBySharedWithAndStatus(User user,Status status);
 }

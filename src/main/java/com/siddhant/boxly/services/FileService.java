@@ -16,11 +16,14 @@ public interface FileService {
 
     List<FileResponseDto> getAllArchivedFiles();
     List<FileResponseDto> getAllFiles();
-    List<FileShareResponseDto> giveAccessToFile(Integer fileId,List<String> userEmail);
+
+    List<FileResponseDto> getAllSharedFiles();
 
     List<UserResponseDto> getUserWithAccessToFile(Integer fileId);
 
-    List<FileShareResponseDto> updateAccessToFile(Integer fileId,List<String> userEmail);
+    List<FileShareResponseDto> updateAccessToFile(Integer fileId,List<String> addUser,List<String> removeUser);
 
     FileDownloadResponseDto downloadFile(Integer fileId);
+
+    FileResponseDto renameFile(Integer fileId,String newName);
 }
